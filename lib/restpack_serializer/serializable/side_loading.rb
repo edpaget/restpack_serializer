@@ -32,7 +32,7 @@ module RestPack::Serializer::SideLoading
         if association.macro == :belongs_to
           link_key = "#{self.key}.#{association.name}"
           href = "/#{association.plural_name}/{#{link_key}}"
-        elsif association.macro == :has_many
+        elsif association.macro == :has_many || association.macro == :has_and_belongs_to_many
           singular_key = self.key.to_s.singularize
           link_key = "#{self.key}.#{association.plural_name}"
           href = "/#{association.plural_name}?#{singular_key}_id={#{key}.id}"
@@ -70,7 +70,7 @@ module RestPack::Serializer::SideLoading
     end
 
     def supported_association?(association)
-      [:belongs_to, :has_many].include?(association.macro)
+      [:belongs_to, :has_many, :has_and_belongs_to_many].include?(association.macro)
     end
 
     def side_load_belongs_to(association, models, serializer)
