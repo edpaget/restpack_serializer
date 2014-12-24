@@ -68,7 +68,7 @@ module RestPack::Serializer::SideLoading
     end
 
     def supported_association?(association_macro)
-      [:belongs_to, :has_many, :has_and_belongs_to_many].include?(association_macro)
+      [:belongs_to, :has_one, :has_many, :has_and_belongs_to_many].include?(association_macro)
     end
 
     def association_from_include(include)
@@ -83,7 +83,7 @@ module RestPack::Serializer::SideLoading
           return association
         end
       end
-      raise_invalid_include(include)
+      raise_invalid_include(possible_relations.first)
     end
 
     def can_include?(include)
@@ -102,9 +102,10 @@ module RestPack::Serializer::SideLoading
     end
 
     def url_for_association(association)
-      identifier = if association.macro == :belongs_to
+      identifier = case
+      when :belongs_to, :has_one
         "/{#{key}.#{association.name}}"
-      else association.macro.to_s.match(/has_/)
+      else
         param = can_include_options(association)[:param] || "#{singular_key}_id"
         value = can_include_options(association)[:value] || "id"
 

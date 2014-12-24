@@ -37,6 +37,8 @@ module RestPack
         end
       end
 
+      alias :side_load_has_one :side_load_belongs_to
+
       private
 
       def model_ids
@@ -44,12 +46,7 @@ module RestPack
       end
 
       def model_serializer(model)
-        serializer_type = if @association.polymorphic?
-          model.class.name
-        else
-          @association.class_name
-        end
-        RestPack::Serializer::Factory.create(serializer_type)
+        RestPack::Serializer::Factory.create(model.class.name)
       end
 
       def has_association_relation

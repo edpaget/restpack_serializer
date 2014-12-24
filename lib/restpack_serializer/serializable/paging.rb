@@ -19,6 +19,8 @@ module RestPack::Serializer::Paging
         linkable_types = result.links.values.map { |link| link[:type].to_s }
         includes = options.include.select do |include|
           linkable_types.include?(include)
+        end.map do |include|
+          association_from_include(include).class_name
         end
         Array(RestPack::Serializer::Factory.create(*includes)).each do |serializer|
           result.links.merge! serializer.class.links

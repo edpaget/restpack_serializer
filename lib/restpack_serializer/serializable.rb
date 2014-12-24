@@ -71,8 +71,8 @@ module RestPack
     def add_links(model, data)
       self.class.associations.each do |association|
         data[:links] ||= {}
-        links_value = case
-        when association.macro == :belongs_to
+        links_value = case association.macro
+        when :belongs_to
           if association.polymorphic?
             linked_id = model.send(association.foreign_key)
                         .try(:to_s)
@@ -89,7 +89,9 @@ module RestPack
           else
             model.send(association.foreign_key).try(:to_s)
           end
-        when association.macro.to_s.match(/has_/)
+        when :has_one
+          model.send(association.name).try(:id).try(:to_s)
+        else
           if model.send(association.name).loaded?
             model.send(association.name).collect { |associated| associated.id.to_s }
           else
